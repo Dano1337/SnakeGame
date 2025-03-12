@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -15,39 +15,39 @@ namespace Snake
 
     class Game
     {
-        private const int ScreenWidth = 32;
-        private const int ScreenHeight = 16;
-        private const int InitialLength = 5;
-        private const int GameSpeed = 500;
+        private const int SCREEN_WIDTH = 32;
+        private const int SCREEN_HEIGHT = 16;
+        private const int INITIAL_LENGTH = 5;
+        private const int GAME_SPEED = 500;
 
-        private readonly Random _random = new Random();
-        private readonly List<int> _snakeBodyX = new List<int>();
-        private readonly List<int> _snakeBodyY = new List<int>();
-        private int _foodX;
-        private int _foodY;
-        private int _score;
-        private bool _isGameOver;
-        private string _direction;
-        private Pixel _snakeHead;
+        private readonly Random random = new Random();
+        private readonly List<int> snakeBodyX = new List<int>();
+        private readonly List<int> snakeBodyY = new List<int>();
+        private int foodX;
+        private int foodY;
+        private int score;
+        private bool isGameOver;
+        private string direction;
+        private Pixel snakeHead;
 
         public Game()
         {
-            Console.WindowHeight = ScreenHeight;
-            Console.WindowWidth = ScreenWidth;
-            _score = InitialLength;
-            _direction = "RIGHT";
-            _snakeHead = new Pixel(ScreenWidth / 2, ScreenHeight / 2, ConsoleColor.Red);
+            Console.WindowHeight = SCREEN_HEIGHT;
+            Console.WindowWidth = SCREEN_WIDTH;
+            score = INITIAL_LENGTH;
+            direction = "RIGHT";
+            snakeHead = new Pixel(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, ConsoleColor.Red);
             SpawnFood();
         }
 
         public void Run()
         {
-            while (!_isGameOver)
+            while (!isGameOver)
             {
                 Draw();
                 HandleInput();
                 Update();
-                Thread.Sleep(GameSpeed);
+                Thread.Sleep(GAME_SPEED);
             }
             DisplayGameOver();
         }
@@ -63,18 +63,18 @@ namespace Snake
         private void DrawBorders()
         {
             Console.ForegroundColor = ConsoleColor.White;
-            for (int i = 0; i < ScreenWidth; i++)
+            for (int i = 0; i < SCREEN_WIDTH; i++)
             {
                 Console.SetCursorPosition(i, 0);
                 Console.Write("■");
-                Console.SetCursorPosition(i, ScreenHeight - 1);
+                Console.SetCursorPosition(i, SCREEN_HEIGHT - 1);
                 Console.Write("■");
             }
-            for (int i = 0; i < ScreenHeight; i++)
+            for (int i = 0; i < SCREEN_HEIGHT; i++)
             {
                 Console.SetCursorPosition(0, i);
                 Console.Write("■");
-                Console.SetCursorPosition(ScreenWidth - 1, i);
+                Console.SetCursorPosition(SCREEN_WIDTH - 1, i);
                 Console.Write("■");
             }
         }
@@ -82,23 +82,23 @@ namespace Snake
         private void DrawSnake()
         {
             Console.ForegroundColor = ConsoleColor.Green;
-            for (int i = 0; i < _snakeBodyX.Count; i++)
+            for (int i = 0; i < snakeBodyX.Count; i++)
             {
-                Console.SetCursorPosition(_snakeBodyX[i], _snakeBodyY[i]);
+                Console.SetCursorPosition(snakeBodyX[i], snakeBodyY[i]);
                 Console.Write("■");
-                if (_snakeBodyX[i] == _snakeHead.X && _snakeBodyY[i] == _snakeHead.Y)
+                if (snakeBodyX[i] == snakeHead.X && snakeBodyY[i] == snakeHead.Y)
                 {
-                    _isGameOver = true;
+                    isGameOver = true;
                 }
             }
-            Console.SetCursorPosition(_snakeHead.X, _snakeHead.Y);
-            Console.ForegroundColor = _snakeHead.Color;
+            Console.SetCursorPosition(snakeHead.X, snakeHead.Y);
+            Console.ForegroundColor = snakeHead.Color;
             Console.Write("■");
         }
 
         private void DrawFood()
         {
-            Console.SetCursorPosition(_foodX, _foodY);
+            Console.SetCursorPosition(foodX, foodY);
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Write("■");
         }
@@ -110,36 +110,36 @@ namespace Snake
             ConsoleKey key = Console.ReadKey(true).Key;
             switch (key)
             {
-                case ConsoleKey.UpArrow when _direction != "DOWN":
-                    _direction = "UP";
+                case ConsoleKey.UpArrow when direction != "DOWN":
+                    direction = "UP";
                     break;
-                case ConsoleKey.DownArrow when _direction != "UP":
-                    _direction = "DOWN";
+                case ConsoleKey.DownArrow when direction != "UP":
+                    direction = "DOWN";
                     break;
-                case ConsoleKey.LeftArrow when _direction != "RIGHT":
-                    _direction = "LEFT";
+                case ConsoleKey.LeftArrow when direction != "RIGHT":
+                    direction = "LEFT";
                     break;
-                case ConsoleKey.RightArrow when _direction != "LEFT":
-                    _direction = "RIGHT";
+                case ConsoleKey.RightArrow when direction != "LEFT":
+                    direction = "RIGHT";
                     break;
             }
         }
 
         private void Update()
         {
-            _snakeBodyX.Add(_snakeHead.X);
-            _snakeBodyY.Add(_snakeHead.Y);
+            snakeBodyX.Add(snakeHead.X);
+            snakeBodyY.Add(snakeHead.Y);
             MoveHead();
 
-            if (_snakeHead.X == _foodX && _snakeHead.Y == _foodY)
+            if (snakeHead.X == foodX && snakeHead.Y == foodY)
             {
-                _score++;
+                score++;
                 SpawnFood();
             }
-            else if (_snakeBodyX.Count > _score)
+            else if (snakeBodyX.Count > score)
             {
-                _snakeBodyX.RemoveAt(0);
-                _snakeBodyY.RemoveAt(0);
+                snakeBodyX.RemoveAt(0);
+                snakeBodyY.RemoveAt(0);
             }
 
             CheckCollision();
@@ -147,41 +147,41 @@ namespace Snake
 
         private void MoveHead()
         {
-            switch (_direction)
+            switch (direction)
             {
                 case "UP":
-                    _snakeHead.Y--;
+                    snakeHead.Y--;
                     break;
                 case "DOWN":
-                    _snakeHead.Y++;
+                    snakeHead.Y++;
                     break;
                 case "LEFT":
-                    _snakeHead.X--;
+                    snakeHead.X--;
                     break;
                 case "RIGHT":
-                    _snakeHead.X++;
+                    snakeHead.X++;
                     break;
             }
         }
 
         private void SpawnFood()
         {
-            _foodX = _random.Next(1, ScreenWidth - 2);
-            _foodY = _random.Next(1, ScreenHeight - 2);
+            foodX = random.Next(1, SCREEN_WIDTH - 2);
+            foodY = random.Next(1, SCREEN_HEIGHT - 2);
         }
 
         private void CheckCollision()
         {
-            if (_snakeHead.X == 0 || _snakeHead.X == ScreenWidth - 1 || _snakeHead.Y == 0 || _snakeHead.Y == ScreenHeight - 1)
+            if (snakeHead.X == 0 || snakeHead.X == SCREEN_WIDTH - 1 || snakeHead.Y == 0 || snakeHead.Y == SCREEN_HEIGHT - 1)
             {
-                _isGameOver = true;
+                isGameOver = true;
             }
         }
 
         private void DisplayGameOver()
         {
-            Console.SetCursorPosition(ScreenWidth / 5, ScreenHeight / 2);
-            Console.WriteLine($"Game Over, Score: {_score}");
+            Console.SetCursorPosition(SCREEN_WIDTH / 5, SCREEN_HEIGHT / 2);
+            Console.WriteLine($"Game Over, Score: {score}");
             Console.ReadKey();
         }
     }
